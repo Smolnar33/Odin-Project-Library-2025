@@ -6,9 +6,12 @@ function Book(title, author, pages, read) {
   this.pages = pages;
   this.read = read;
   this.info = function () {
-    return `${this.title} by ${author}, ${pages} pages ${
-      read ? 'read' : 'not read'
-    } `;
+    return `${this.title} by ${this.author}, ${this.pages} pages ${this.read} `;
+  };
+  this.confirmRead = function () {
+    if (this.read === 'not read') {
+      return (this.read = 'read');
+    }
   };
 }
 
@@ -27,7 +30,7 @@ const updatePage = () => {
   myLibrary.forEach((book) => {
     const childDiv = document.createElement('div');
     childDiv.className = 'book';
-    childDiv.textContent = `${book.title}, ${book.author}, ${book.pages} pages`;
+    childDiv.textContent = `${book.title}, ${book.author}, ${book.pages} pages, ${book.read} `;
     const deleteBtn = document.createElement('button');
     deleteBtn.type = 'button';
     deleteBtn.setAttribute('id', 'book-delete-btn');
@@ -35,6 +38,13 @@ const updatePage = () => {
     childDiv.setAttribute('data-index', myLibrary.indexOf(book));
     childDiv.appendChild(deleteBtn);
     cardDiv.appendChild(childDiv);
+    if (book.read === 'not read') {
+      const readBtn = document.createElement('button');
+      readBtn.type = 'button';
+      readBtn.innerText = 'Read';
+      readBtn.classList.add('readBtn');
+      childDiv.appendChild(readBtn);
+    }
   });
 };
 
@@ -87,6 +97,13 @@ cardDiv.addEventListener('click', (e) => {
     bookDiv.remove();
 
     // Update DOM
+    cardDiv.textContent = '';
+    updatePage();
+  }
+  if (e.target && e.target.className === 'readBtn') {
+    const bookDiv = e.target.parentElement;
+    const bookIndex = bookDiv.getAttribute('data-index');
+    myLibrary[bookIndex].confirmRead();
     cardDiv.textContent = '';
     updatePage();
   }
